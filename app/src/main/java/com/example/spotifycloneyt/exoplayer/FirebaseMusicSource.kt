@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class FirebaseMusicSource@Inject constructor(
+class FirebaseMusicSource @Inject constructor(
     private val musicDatabase: MusicDatabase
 ) {
 
@@ -42,7 +42,9 @@ class FirebaseMusicSource@Inject constructor(
         val concatenatingMediaSource = ConcatenatingMediaSource()
         songs.forEach { song ->
             val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(song.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI).toUri())
+                .createMediaSource(
+                    song.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI).toUri()
+                )
             concatenatingMediaSource.addMediaSource(mediaSource)
         }
         return concatenatingMediaSource
