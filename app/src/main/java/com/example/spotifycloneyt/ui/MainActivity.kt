@@ -1,8 +1,9 @@
-package com.example.spotifycloneyt
+package com.example.spotifycloneyt.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.bumptech.glide.RequestManager
+import com.example.spotifycloneyt.R
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
