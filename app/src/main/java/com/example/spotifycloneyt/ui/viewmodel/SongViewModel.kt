@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spotifycloneyt.exoplayer.MusicService
 import com.example.spotifycloneyt.exoplayer.MusicServiceConnection
-import com.example.spotifycloneyt.exoplayer.currentPlaybackPosition
+import com.example.spotifycloneyt.exoplayer.ext.currentPlaybackPosition
 import com.example.spotifycloneyt.other.Constants.UPDATE_PLAYER_POSITION_INTERVAL
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

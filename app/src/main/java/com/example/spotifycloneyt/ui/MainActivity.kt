@@ -11,8 +11,8 @@ import com.bumptech.glide.RequestManager
 import com.example.spotifycloneyt.R
 import com.example.spotifycloneyt.adapters.SwipeSongAdapter
 import com.example.spotifycloneyt.data.entities.Song
-import com.example.spotifycloneyt.exoplayer.isPlaying
-import com.example.spotifycloneyt.exoplayer.toSong
+import com.example.spotifycloneyt.exoplayer.ext.isPlaying
+import com.example.spotifycloneyt.exoplayer.ext.toSong
 import com.example.spotifycloneyt.other.Status
 import com.example.spotifycloneyt.ui.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -39,6 +39,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setupViewPager()
+        setupListeners()
+        subscribeToObservers()
+    }
+
+    private fun setupViewPager() {
         vpSong.adapter = swipeSongAdapter
 
         vpSong.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -48,10 +54,13 @@ class MainActivity : AppCompatActivity() {
                     mainViewModel.playOrToggleSong(swipeSongAdapter.songs[position])
                 } else {
                     curPlayingSong = swipeSongAdapter.songs[position]
+                    glide.load(curPlayingSong?.imageUrl).into(ivCurSongImage)
                 }
             }
         })
+    }
 
+    private fun setupListeners() {
         ivPlayPause.setOnClickListener {
             curPlayingSong?.let {
                 mainViewModel.playOrToggleSong(it, true)
@@ -64,25 +73,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         navHostFragment.findNavController().addOnDestinationChangedListener { _, destination, _ ->
-            when(destination.id) {
+            when (destination.id) {
                 R.id.songFragment -> hideBottomBar()
                 R.id.homeFragment -> showBottomBar()
                 else -> showBottomBar()
             }
         }
-        subscribeToObservers()
     }
 
     private fun hideBottomBar() {
         ivCurSongImage.isVisible = false
         vpSong.isVisible = false
         ivPlayPause.isVisible = false
+        supportActionBar?.hide()
     }
 
     private fun showBottomBar() {
         ivCurSongImage.isVisible = true
         vpSong.isVisible = true
         ivPlayPause.isVisible = true
+        supportActionBar?.show();
     }
 
     private fun switchViewPagerToCurrentSong(song: Song) {

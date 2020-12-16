@@ -1,4 +1,4 @@
-package com.example.spotifycloneyt.exoplayer
+package com.example.spotifycloneyt.exoplayer.ext
 
 import android.support.v4.media.MediaMetadataCompat
 import com.example.spotifycloneyt.data.entities.Song

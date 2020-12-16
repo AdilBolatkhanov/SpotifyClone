@@ -56,7 +56,6 @@ class MusicService : MediaBrowserServiceCompat() {
             private set
     }
 
-
     override fun onCreate() {
         super.onCreate()
         serviceScope.launch {
@@ -122,7 +121,7 @@ class MusicService : MediaBrowserServiceCompat() {
         clientPackageName: String,
         clientUid: Int,
         rootHints: Bundle?
-    ): BrowserRoot? {
+    ): BrowserRoot {
         return BrowserRoot(MEDIA_ROOT_ID, null)
     }
 
@@ -130,13 +129,17 @@ class MusicService : MediaBrowserServiceCompat() {
         parentId: String,
         result: Result<MutableList<MediaBrowserCompat.MediaItem>>
     ) {
-        when(parentId) {
+        when (parentId) {
             MEDIA_ROOT_ID -> {
                 val resultsSent = firebaseMusicSource.whenReady { isInitialized ->
-                    if(isInitialized) {
+                    if (isInitialized) {
                         result.sendResult(firebaseMusicSource.asMediaItems())
-                        if(!isPlayerInitialized && firebaseMusicSource.songs.isNotEmpty()) {
-                            preparePlayer(firebaseMusicSource.songs, firebaseMusicSource.songs[0], false)
+                        if (!isPlayerInitialized && firebaseMusicSource.songs.isNotEmpty()) {
+                            preparePlayer(
+                                firebaseMusicSource.songs,
+                                firebaseMusicSource.songs[0],
+                                false
+                            )
                             isPlayerInitialized = true
                         }
                     } else {
@@ -144,7 +147,7 @@ class MusicService : MediaBrowserServiceCompat() {
                         result.sendResult(null)
                     }
                 }
-                if(!resultsSent) {
+                if (!resultsSent) {
                     result.detach()
                 }
             }

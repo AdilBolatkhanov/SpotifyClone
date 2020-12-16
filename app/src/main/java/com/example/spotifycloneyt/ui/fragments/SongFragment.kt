@@ -10,8 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.RequestManager
 import com.example.spotifycloneyt.R
 import com.example.spotifycloneyt.data.entities.Song
-import com.example.spotifycloneyt.exoplayer.isPlaying
-import com.example.spotifycloneyt.exoplayer.toSong
+import com.example.spotifycloneyt.exoplayer.ext.isPlaying
+import com.example.spotifycloneyt.exoplayer.ext.toSong
 import com.example.spotifycloneyt.other.Status
 import com.example.spotifycloneyt.ui.viewmodel.MainViewModel
 import com.example.spotifycloneyt.ui.viewmodel.SongViewModel
@@ -40,7 +40,10 @@ class SongFragment : Fragment(R.layout.fragment_song) {
         super.onViewCreated(view, savedInstanceState)
         mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         subscribeToObservers()
+        setupListeners()
+    }
 
+    private fun setupListeners() {
         ivPlayPauseDetail.setOnClickListener {
             curPlayingSong?.let {
                 mainViewModel.playOrToggleSong(it, true)
@@ -49,7 +52,7 @@ class SongFragment : Fragment(R.layout.fragment_song) {
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if(fromUser) {
+                if (fromUser) {
                     setCurPlayerTimeToTextView(progress.toLong())
                 }
             }
@@ -102,20 +105,15 @@ class SongFragment : Fragment(R.layout.fragment_song) {
             curPlayingSong = it.toSong()
             updateTitleAndSongImage(curPlayingSong!!)
         }
-        mainViewModel.curPlayingSong.observe(viewLifecycleOwner) {
-            if(it == null) return@observe
-            curPlayingSong = it.toSong()
-            updateTitleAndSongImage(curPlayingSong!!)
-        }
         mainViewModel.playbackState.observe(viewLifecycleOwner) {
             playbackState = it
             ivPlayPauseDetail.setImageResource(
-                if(playbackState?.isPlaying == true) R.drawable.ic_pause else R.drawable.ic_play
+                if (playbackState?.isPlaying == true) R.drawable.ic_pause else R.drawable.ic_play
             )
             seekBar.progress = it?.position?.toInt() ?: 0
         }
         songViewModel.curPlayerPosition.observe(viewLifecycleOwner) {
-            if(shouldUpdateSeekbar) {
+            if (shouldUpdateSeekbar) {
                 seekBar.progress = it.toInt()
                 setCurPlayerTimeToTextView(it)
             }

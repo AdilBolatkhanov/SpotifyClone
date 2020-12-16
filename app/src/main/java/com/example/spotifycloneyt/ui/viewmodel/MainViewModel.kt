@@ -8,9 +8,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.spotifycloneyt.data.entities.Song
 import com.example.spotifycloneyt.exoplayer.MusicServiceConnection
-import com.example.spotifycloneyt.exoplayer.isPlayEnabled
-import com.example.spotifycloneyt.exoplayer.isPlaying
-import com.example.spotifycloneyt.exoplayer.isPrepared
+import com.example.spotifycloneyt.exoplayer.ext.isPlayEnabled
+import com.example.spotifycloneyt.exoplayer.ext.isPlaying
+import com.example.spotifycloneyt.exoplayer.ext.isPrepared
 import com.example.spotifycloneyt.other.Constants.MEDIA_ROOT_ID
 import com.example.spotifycloneyt.other.Resource
 
@@ -27,24 +27,26 @@ class MainViewModel @ViewModelInject constructor(
 
     init {
         _mediaItems.postValue(Resource.loading(null))
-        musicServiceConnection.subscribe(MEDIA_ROOT_ID, object : MediaBrowserCompat.SubscriptionCallback() {
-            override fun onChildrenLoaded(
-                parentId: String,
-                children: MutableList<MediaBrowserCompat.MediaItem>
-            ) {
-                super.onChildrenLoaded(parentId, children)
-                val items = children.map {
-                    Song(
-                        it.mediaId!!,
-                        it.description.title.toString(),
-                        it.description.subtitle.toString(),
-                        it.description.mediaUri.toString(),
-                        it.description.iconUri.toString()
-                    )
+        musicServiceConnection.subscribe(
+            MEDIA_ROOT_ID,
+            object : MediaBrowserCompat.SubscriptionCallback() {
+                override fun onChildrenLoaded(
+                    parentId: String,
+                    children: MutableList<MediaBrowserCompat.MediaItem>
+                ) {
+                    super.onChildrenLoaded(parentId, children)
+                    val items = children.map {
+                        Song(
+                            it.mediaId!!,
+                            it.description.title.toString(),
+                            it.description.subtitle.toString(),
+                            it.description.mediaUri.toString(),
+                            it.description.iconUri.toString()
+                        )
+                    }
+                    _mediaItems.postValue(Resource.success(items))
                 }
-                _mediaItems.postValue(Resource.success(items))
-            }
-        })
+            })
     }
 
     fun skipToNextSong() {
@@ -61,11 +63,12 @@ class MainViewModel @ViewModelInject constructor(
 
     fun playOrToggleSong(mediaItem: Song, toggle: Boolean = false) {
         val isPrepared = playbackState.value?.isPrepared ?: false
-        if(isPrepared && mediaItem.mediaId ==
-            curPlayingSong.value?.getString(METADATA_KEY_MEDIA_ID)) {
+        if (isPrepared && mediaItem.mediaId ==
+            curPlayingSong.value?.getString(METADATA_KEY_MEDIA_ID)
+        ) {
             playbackState.value?.let { playbackState ->
                 when {
-                    playbackState.isPlaying -> if(toggle) musicServiceConnection.transportControls.pause()
+                    playbackState.isPlaying -> if (toggle) musicServiceConnection.transportControls.pause()
                     playbackState.isPlayEnabled -> musicServiceConnection.transportControls.play()
                     else -> Unit
                 }
@@ -77,7 +80,10 @@ class MainViewModel @ViewModelInject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        musicServiceConnection.unsubscribe(MEDIA_ROOT_ID, object : MediaBrowserCompat.SubscriptionCallback() {})
+        musicServiceConnection.unsubscribe(
+            MEDIA_ROOT_ID,
+            object : MediaBrowserCompat.SubscriptionCallback() {}
+        )
     }
 }
 
