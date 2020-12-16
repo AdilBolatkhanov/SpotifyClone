@@ -58,21 +58,20 @@ class MusicService : MediaBrowserServiceCompat() {
 
     override fun onCreate() {
         super.onCreate()
+
+        fetchMedia()
+        setupMediaSession()
+        setupConnector()
+        setupPlayer()
+    }
+
+    private fun fetchMedia() {
         serviceScope.launch {
             firebaseMusicSource.fetchMediaData()
         }
+    }
 
-        val activityIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let {
-            PendingIntent.getActivity(this, 0, it, 0)
-        }
-
-        mediaSession = MediaSessionCompat(this, SERVICE_TAG).apply {
-            setSessionActivity(activityIntent)
-            isActive = true
-        }
-
-        sessionToken = mediaSession.sessionToken
-
+    private fun setupPlayer() {
         musicNotificationManager = MusicNotificationManager(
             this,
             mediaSession.sessionToken,
@@ -81,6 +80,13 @@ class MusicService : MediaBrowserServiceCompat() {
             curSongDuration = exoPlayer.duration
         }
 
+
+        musicPlayerEventListener = MusicPlayerEventListener(this)
+        exoPlayer.addListener(musicPlayerEventListener)
+        musicNotificationManager.showNotification(exoPlayer)
+    }
+
+    private fun setupConnector() {
         val musicPlaybackPreparer = MusicPlaybackPreparer(firebaseMusicSource) {
             curPlayingSong = it
             preparePlayer(
@@ -94,10 +100,19 @@ class MusicService : MediaBrowserServiceCompat() {
         mediaSessionConnector.setPlaybackPreparer(musicPlaybackPreparer)
         mediaSessionConnector.setQueueNavigator(MusicQueueNavigator())
         mediaSessionConnector.setPlayer(exoPlayer)
+    }
 
-        musicPlayerEventListener = MusicPlayerEventListener(this)
-        exoPlayer.addListener(musicPlayerEventListener)
-        musicNotificationManager.showNotification(exoPlayer)
+    private fun setupMediaSession() {
+        val activityIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let {
+            PendingIntent.getActivity(this, 0, it, 0)
+        }
+
+        mediaSession = MediaSessionCompat(this, SERVICE_TAG).apply {
+            setSessionActivity(activityIntent)
+            isActive = true
+        }
+
+        sessionToken = mediaSession.sessionToken
     }
 
     private inner class MusicQueueNavigator : TimelineQueueNavigator(mediaSession) {
