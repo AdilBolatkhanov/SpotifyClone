@@ -1,7 +1,13 @@
 # SpotifyClone
 Spotify Clone is music player app for Android written in Kotlin. It supports many features including background playback, audio focus handling, multiple platforms (like Wear, TV and Auto).
-It loads a music catalog from a remote server [Firebase Firestore][0] and allows the user to browse the albums and songs. All music and images are stored in [Firebase Storage][2].
-A notification allows users to see the song being played and to control playback. It's also a mandatory requirement for a foreground service and stops MusicService from being killed. Audio playback is provided by [ExoPlayer][3].
+* Architecture: Client/server, MVVM.
+* [Coroutines][4] for for managing background threads with simplified code and reducing needs for callbacks
+* [Dagger-Hilt][5] for dependency injection
+* [Navigation][6] Handle everything needed for in-app navigation.
+* It loads a music catalog from a remote server [Firebase Firestore][0] and allows the user to browse the albums and songs. 
+* All music and images are stored in [Firebase Storage][2].
+* A notification allows users to see the song being played and to control playback. It's also a mandatory requirement for a foreground service and stops MusicService from being killed.
+* Audio playback is provided by [ExoPlayer][3].
 
 <img src="screens/songs.jpg" width="230"/><img src="screens/not1.jpg" width="230"/><img src="screens/not2.jpg" width="230"/>
 <img src="screens/song.jpg" width="230"/>
@@ -40,3 +46,6 @@ Spotify clone achieves this by using a Model-View-ViewModel architecture. This a
 [1]: https://developer.android.com/guide/topics/media-apps/audio-app/building-an-audio-app
 [2]: https://firebase.google.com/docs/storage
 [3]: https://developer.android.com/guide/topics/media/exoplayer
+[4]: https://kotlinlang.org/docs/reference/coroutines-overview.html
+[5]: https://dagger.dev/hilt/
+[6]: https://developer.android.com/guide/navigation/navigation-getting-started
